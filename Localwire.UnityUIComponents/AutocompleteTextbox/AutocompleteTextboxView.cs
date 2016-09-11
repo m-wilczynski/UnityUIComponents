@@ -33,10 +33,6 @@
         [SerializeField]
         private float _width = 250;
 
-        [Header("Source for results lookup")]
-        [SerializeField]
-        private IAutocompleteSourceProvider<T> _sourceProvider;
-
         [Header("Input field for autocomplete")]
         [SerializeField]
         private InputField _autocompleteInput;
@@ -51,6 +47,25 @@
         private Transform _resultsRoot;
         private T _selectedItem;
         private Coroutine _autocompleteDelayCoroutine;
+        private IAutocompleteSourceProvider<T> _sourceProvider;
+
+        /// <summary>
+        /// Source from which elements for autocomplete will be provided
+        /// </summary>
+        public IAutocompleteSourceProvider<T> SourceProvider
+        {
+            get { return _sourceProvider; }
+            set
+            {
+                if ((_sourceProvider != null && _sourceProvider.Equals(value)) || value == null)
+                {
+                    _autocompleteInput.interactable = false;
+                    return;
+                }
+                _sourceProvider = value;
+                _autocompleteInput.interactable = true;
+            }
+        }
 
         /// <summary>
         /// Currently selected item
@@ -62,17 +77,18 @@
 
         protected virtual void Start()
         {
-            Validate();
+            ValidateUI();
             PopulateAutocompleteResultMap();
             BindInputField();
+            _autocompleteInput.interactable = false;
         }
 
-        protected virtual void Validate()
+        protected virtual void ValidateUI()
         {
-            if (_sourceProvider == null)
-                throw new InvalidOperationException("_sourceProvider is not set");
             if (_autocompleteInput == null)
                 throw new InvalidOperationException("_autocompleteInput is not set");
+            if (_selectedItemText == null)
+                throw new InvalidOperationException("_selectedItemText not set");
         }
 
         protected virtual AutocompleteResultListElement CreateListElementView()
@@ -93,6 +109,7 @@
                 ResultViewsMap[i] = CreateListElementView();
                 ResultViewsMap[i].transform.SetParent(_resultsRoot);
                 ResultViewsMap[i].Bind(i, OnSelectedItem);
+                ResultViewsMap[i].Hide();
             }
         }
 
@@ -118,13 +135,14 @@
         private IEnumerator OnInputFieldValueChanged(string input)
         {
             yield return new WaitForSeconds(_autocompleteDelay);
-            var results = _sourceProvider.Find(input);
+            var results = SourceProvider.Find(input);
             PopulateWithResults(results);
         }
 
         private void OnSelectedItem(int index)
         {
             _selectedItem = Results[index];
+            _selectedItemText.text = SourceProvider.LabelNameSelector(_selectedItem);
             Results = new T[_maxItemsToShow];
         }
 
