@@ -10,6 +10,7 @@
     {
         private bool _isBound;
         private int _index;
+        private Action<int> _onClick;
 
         public void Bind(int index, Action<int> onClick)
         {
@@ -18,7 +19,8 @@
             if (_isBound) return;
 
             _index = index;
-            gameObject.AddComponent<EventTrigger>().AddEvent(onClick, EventTriggerType.PointerUp, _index);
+            _onClick = onClick;
+            gameObject.AddComponent<EventTrigger>().AddEvent(_onClick, EventTriggerType.PointerUp, _index);
             
             _isBound = true;
         }

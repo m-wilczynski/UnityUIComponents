@@ -78,7 +78,8 @@
         protected virtual void Start()
         {
             ValidateUI();
-            PopulateAutocompleteResultMap();
+            BuildRoot();
+            StartCoroutine(PopulateAutocompleteResultMap());
             BindInputField();
             _autocompleteInput.interactable = false;
         }
@@ -98,18 +99,18 @@
             return go.AddComponent<AutocompleteResultListElement>();
         }
 
-        private void PopulateAutocompleteResultMap()
+        private IEnumerator PopulateAutocompleteResultMap()
         {
+            yield return new WaitForEndOfFrame();
             ResultViewsMap = new AutocompleteResultListElement[_maxItemsToShow];
             Results = new T[_maxItemsToShow];
-            BuildRoot();
 
             for (var i = 0; i < _maxItemsToShow; i++)
             {
                 ResultViewsMap[i] = CreateListElementView();
                 ResultViewsMap[i].transform.SetParent(_resultsRoot);
                 ResultViewsMap[i].Bind(i, OnSelectedItem);
-                ResultViewsMap[i].Hide();
+                
             }
         }
 
@@ -142,7 +143,7 @@
         private void OnSelectedItem(int index)
         {
             _selectedItem = Results[index];
-            _selectedItemText.text = SourceProvider.LabelNameSelector(_selectedItem);
+            _selectedItemText.text = SourceProvider.LabelTextFor(_selectedItem);
             Results = new T[_maxItemsToShow];
         }
 
@@ -153,13 +154,14 @@
 
             foreach (var view in ResultViewsMap)
             {
-                if (counter <= _maxItemsToShow)
+                if (counter >= _maxItemsToShow)
                 {
                     view.Hide();
                 }
                 else
                 {
-                    view.SwapItem(_sourceProvider.LabelNameSelector(resultsToShow[counter]));
+                    view.SwapItem(_sourceProvider.LabelTextFor(resultsToShow[counter]));
+                    Results[counter] = resultsToShow[counter];
                     view.Show();
                 }
                 counter++;

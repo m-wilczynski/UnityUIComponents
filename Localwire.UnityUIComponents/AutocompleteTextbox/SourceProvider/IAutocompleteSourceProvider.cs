@@ -5,7 +5,7 @@
 
     public interface IAutocompleteSourceProvider<T>
     {
-        Func<T, string> LabelNameSelector { get; }
+        string LabelTextFor(T element);
         IEnumerable<T> Find(string searchString);
     }
 }
