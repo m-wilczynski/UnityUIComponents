@@ -26,12 +26,20 @@
         [Header("Delay before autocomplete fires")]
         [Range(0, 5)]
         [SerializeField]
-        private float _autocompleteDelay = 1f;
+        private float _autocompleteDelay = 0.5f;
 
         [Header("Width of input field and result list elements")]
-        [Range(1, 1000)]
+        [Range(1, 1920)]
         [SerializeField]
         private float _width = 250;
+
+        [Header("Padding of results list")]
+        [SerializeField]
+        private RectOffset _resultsPadding = new RectOffset(10, 10, 5, 5);
+
+        [Header("Spacing between elements")]
+        [Range(0, 1000)]
+        [SerializeField] private int _resultsSpacing = 5;
 
         [Header("Input field for autocomplete")]
         [SerializeField]
@@ -42,12 +50,24 @@
         private Text _selectedItemText;
         //
 
-        protected AutocompleteResultListElement[] ResultViewsMap;
-        protected T[] Results;
-        private Transform _resultsRoot;
         private T _selectedItem;
         private Coroutine _autocompleteDelayCoroutine;
         private IAutocompleteSourceProvider<T> _sourceProvider;
+
+        /// <summary>
+        /// Results list elements map
+        /// </summary>
+        protected AutocompleteResultListElement[] ResultViewsMap { get; private set; }
+        
+        /// <summary>
+        /// Results from current autocomplete lookup
+        /// </summary>
+        protected T[] Results { get; private set; }
+
+        /// <summary>
+        /// Parent for every result list view created
+        /// </summary>
+        protected Transform ResultsRoot { get; private set; }
 
         /// <summary>
         /// Source from which elements for autocomplete will be provided
@@ -59,7 +79,6 @@
             {
                 if ((_sourceProvider != null && _sourceProvider.Equals(value)) || value == null)
                 {
-                    _autocompleteInput.interactable = false;
                     return;
                 }
                 _sourceProvider = value;
@@ -75,6 +94,9 @@
             get { return _selectedItem; }
         }
 
+        /// <summary>
+        /// Setting up autocomplete textbox (from <see cref="MonoBehaviour"/>)
+        /// </summary>
         protected virtual void Start()
         {
             ValidateUI();
@@ -84,6 +106,9 @@
             _autocompleteInput.interactable = false;
         }
 
+        /// <summary>
+        /// Validates UI assigned from inspector before setup
+        /// </summary>
         protected virtual void ValidateUI()
         {
             if (_autocompleteInput == null)
@@ -92,10 +117,17 @@
                 throw new InvalidOperationException("_selectedItemText not set");
         }
 
+        /// <summary>
+        /// Creates element of result list
+        /// </summary>
+        /// <returns>Empty <see cref="AutocompleteResultListElement"/> view</returns>
         protected virtual AutocompleteResultListElement CreateListElementView()
         {
             var go = new GameObject("ResultElement");
-            go.AddComponent<Text>();
+            var rect = go.AddComponent<RectTransform>();
+            var text = go.AddComponent<Text>();
+            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            rect.sizeDelta = new Vector2(_width, rect.sizeDelta.y);
             return go.AddComponent<AutocompleteResultListElement>();
         }
 
@@ -108,22 +140,36 @@
             for (var i = 0; i < _maxItemsToShow; i++)
             {
                 ResultViewsMap[i] = CreateListElementView();
-                ResultViewsMap[i].transform.SetParent(_resultsRoot);
+                ResultViewsMap[i].transform.SetParent(ResultsRoot);
                 ResultViewsMap[i].Bind(i, OnSelectedItem);
-                
             }
         }
 
         private void BuildRoot()
         {
             var resultsRoot = new GameObject("ResultsRoot");
-            resultsRoot.transform.SetParent(transform);
-            _resultsRoot = resultsRoot.transform;
-            resultsRoot.AddComponent<VerticalLayoutGroup>();
+            var rect = resultsRoot.AddComponent<RectTransform>();
+            resultsRoot.transform.SetParent(_autocompleteInput.transform);
+            var inputRect = _autocompleteInput.transform as RectTransform;
+
+            resultsRoot.transform.localPosition = new Vector3(0, -inputRect.rect.height);
+            rect.anchorMin = new Vector2(0.5f, 1);
+            rect.anchorMax = new Vector2(0.5f, 1);
+            rect.pivot = new Vector2(0.5f, 1);
+
+            var layout = resultsRoot.AddComponent<VerticalLayoutGroup>();
+            layout.padding = _resultsPadding;
+            layout.childForceExpandHeight = false;
+            layout.childForceExpandWidth = true;
+            layout.spacing = _resultsSpacing;
+            rect.sizeDelta = new Vector2(_width, rect.sizeDelta.y);
+            ResultsRoot = resultsRoot.transform;
         }
 
         private void BindInputField()
         {
+            var rect = _autocompleteInput.transform as RectTransform;
+            rect.sizeDelta = new Vector2(_width, rect.sizeDelta.y);
             _autocompleteInput.onValueChanged.AddListener(input =>
             {
                 if (input.Length < _minimumChars) return;
@@ -154,7 +200,7 @@
 
             foreach (var view in ResultViewsMap)
             {
-                if (counter >= _maxItemsToShow)
+                if (counter >= resultsToShow.Length)
                 {
                     view.Hide();
                 }
