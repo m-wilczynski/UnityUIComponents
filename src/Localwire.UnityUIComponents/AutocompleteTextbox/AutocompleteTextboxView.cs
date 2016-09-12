@@ -35,7 +35,7 @@
 
         [Header("Padding of results list")]
         [SerializeField]
-        private RectOffset _resultsPadding = new RectOffset(10, 10, 5, 5);
+        private RectOffset _resultsPadding;
 
         [Header("Spacing between elements")]
         [Range(0, 1000)]

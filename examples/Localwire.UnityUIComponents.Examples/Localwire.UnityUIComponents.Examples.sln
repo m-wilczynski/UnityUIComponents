@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2015
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localwire.UnityUIComponents.Examples.CSharp", "Localwire.UnityUIComponents.Examples.CSharp.csproj", "{7D4300C1-A6C8-F78C-BF26-522D5224973A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D4300C1-A6C8-F78C-BF26-522D5224973A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D4300C1-A6C8-F78C-BF26-522D5224973A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D4300C1-A6C8-F78C-BF26-522D5224973A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D4300C1-A6C8-F78C-BF26-522D5224973A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
