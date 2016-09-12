@@ -143,26 +143,33 @@
                 ResultViewsMap[i].transform.SetParent(ResultsRoot);
                 ResultViewsMap[i].Bind(i, OnSelectedItem);
             }
+
+            HideAllResults();
         }
 
         private void BuildRoot()
         {
             var resultsRoot = new GameObject("ResultsRoot");
+
             var rect = resultsRoot.AddComponent<RectTransform>();
             resultsRoot.transform.SetParent(_autocompleteInput.transform);
             var inputRect = _autocompleteInput.transform as RectTransform;
-
             resultsRoot.transform.localPosition = new Vector3(0, -inputRect.rect.height);
             rect.anchorMin = new Vector2(0.5f, 1);
             rect.anchorMax = new Vector2(0.5f, 1);
             rect.pivot = new Vector2(0.5f, 1);
+
+            var img = resultsRoot.AddComponent<Image>();
+            img.color = new Color(1, 1, 1, 128f/255f);
+            var sizeFitter = resultsRoot.AddComponent<ContentSizeFitter>();
+            sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             var layout = resultsRoot.AddComponent<VerticalLayoutGroup>();
             layout.padding = _resultsPadding;
             layout.childForceExpandHeight = false;
             layout.childForceExpandWidth = true;
             layout.spacing = _resultsSpacing;
-            rect.sizeDelta = new Vector2(_width, rect.sizeDelta.y);
+            rect.sizeDelta = new Vector2(_width - 5, rect.sizeDelta.y);
             ResultsRoot = resultsRoot.transform;
         }
 
@@ -172,7 +179,11 @@
             rect.sizeDelta = new Vector2(_width, rect.sizeDelta.y);
             _autocompleteInput.onValueChanged.AddListener(input =>
             {
-                if (input.Length < _minimumChars) return;
+                if (input.Length < _minimumChars)
+                {
+                    HideAllResults();
+                    return;
+                }
                 if (_autocompleteDelayCoroutine != null)
                     StopCoroutine(_autocompleteDelayCoroutine);
                 _autocompleteDelayCoroutine = StartCoroutine(OnInputFieldValueChanged(input));
@@ -191,10 +202,19 @@
             _selectedItem = Results[index];
             _selectedItemText.text = SourceProvider.LabelTextFor(_selectedItem);
             Results = new T[_maxItemsToShow];
+            HideAllResults();
         }
 
         private void PopulateWithResults(IEnumerable<T> results)
         {
+            if (results == null || !results.Any())
+            {
+                ResultsRoot.gameObject.SetActive(false);
+                return;
+            }
+            else
+                ResultsRoot.gameObject.SetActive(true);
+
             var resultsToShow = results.Take(_maxItemsToShow).ToArray();
             int counter = 0;
 
@@ -212,6 +232,15 @@
                 }
                 counter++;
             }
+        }
+
+        private void HideAllResults()
+        {
+            foreach (var view in ResultViewsMap)
+            {
+                view.Hide();
+            }
+            ResultsRoot.gameObject.SetActive(false);
         }
     }
 }

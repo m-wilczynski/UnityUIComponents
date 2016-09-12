@@ -251,3 +251,4 @@ paket-files/
 .idea/
 *.sln.iml
 examples/Localwire.UnityUIComponents.Examples/Library/
+examples/Localwire.UnityUIComponents.Examples/Temp/
