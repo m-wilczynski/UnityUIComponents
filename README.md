@@ -9,8 +9,8 @@ You have two options to use UnityUIComponents in your project:
 
 ## Available components
 
-### Autocomplete Textbox 
-###### Localwire.UnityUIComponents.AutcompleteTextbox.AutocompleteTextboxView<T>
+**Autocomplete Textbox**<br/>
+*<sub>Localwire.UnityUIComponents.AutcompleteTextbox.AutocompleteTextboxView<T></sub>*
 
 <br/>
 Similiar to its web equivalents, **Autocomplete Textbox** listens to user input in `InputField` and after short delay (defined by user), queries provided source of `IAutocompleteSource<T>` with input as criteria and prints results out to UI as `AutocompleteResultListElement`.
