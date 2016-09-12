@@ -25,6 +25,10 @@
             _isBound = true;
         }
 
+        /// <summary>
+        /// Swaps label text
+        /// </summary>
+        /// <param name="newLabel">New text for label</param>
         public virtual void SwapItem(string newLabel)
         {
             GetComponent<Text>().text = newLabel;
