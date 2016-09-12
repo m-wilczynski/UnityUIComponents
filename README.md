@@ -1,8 +1,6 @@
 # UnityUIComponents
 Custom UI components for Unity3D game engine. Intended to fill the gap of some missing, yet useful UI components.
 
-----------
-
 ## Getting started
 
 You have two options to use UnityUIComponents in your project:
