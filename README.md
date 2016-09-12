@@ -10,7 +10,7 @@ You have two options to use UnityUIComponents in your project:
 ## Available components
 
 ### Autocomplete Textbox
-*Localwire.UnityUIComponents.AutcompleteTextbox.AutocompleteTextboxView*
+###### Localwire.UnityUIComponents.AutcompleteTextbox.AutocompleteTextboxView<T>
 
 Similiar to its web equivalents, **Autocomplete Textbox** listens to user input in `InputField` and after short delay (defined by user), queries provided source of `IAutocompleteSource<T>` with input as criteria and prints results out to UI as `AutocompleteResultListElement`.
 Unlike most of built-in Unity3D components, selected item will not only be shown as string in `Text` component but also provided as actual item of type `T` through `AutocompleteTextboxView.SelectedItem` property.
