@@ -37,9 +37,17 @@
         [SerializeField]
         private RectOffset _resultsPadding;
 
-        [Header("Spacing between elements")]
+        [Header("Spacing between results")]
         [Range(0, 1000)]
         [SerializeField] private int _resultsSpacing = 5;
+
+        [Header("Background color of results list")]
+        [SerializeField]
+        private Color _resultsBackgroundColor = new Color(0, 0, 0, 32f / 256);
+
+        [Header("Font color of results list elements")]
+        [SerializeField]
+        private Color _resultsElementFontColor = new Color(0, 0, 0, 150f / 256);
 
         [Header("Input field for autocomplete")]
         [SerializeField]
@@ -113,8 +121,6 @@
         {
             if (_autocompleteInput == null)
                 throw new InvalidOperationException("_autocompleteInput is not set");
-            if (_selectedItemText == null)
-                throw new InvalidOperationException("_selectedItemText not set");
         }
 
         /// <summary>
@@ -127,6 +133,7 @@
             var rect = go.AddComponent<RectTransform>();
             var text = go.AddComponent<Text>();
             text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            text.color = _resultsElementFontColor;
             rect.sizeDelta = new Vector2(_width, rect.sizeDelta.y);
             return go.AddComponent<AutocompleteResultListElement>();
         }
@@ -160,7 +167,7 @@
             rect.pivot = new Vector2(0.5f, 1);
 
             var img = resultsRoot.AddComponent<Image>();
-            img.color = new Color(1, 1, 1, 128f/255f);
+            img.color = _resultsBackgroundColor;
             var sizeFitter = resultsRoot.AddComponent<ContentSizeFitter>();
             sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
@@ -169,7 +176,7 @@
             layout.childForceExpandHeight = false;
             layout.childForceExpandWidth = true;
             layout.spacing = _resultsSpacing;
-            rect.sizeDelta = new Vector2(_width - 5, rect.sizeDelta.y);
+            rect.sizeDelta = new Vector2(_width, rect.sizeDelta.y);
             ResultsRoot = resultsRoot.transform;
         }
 
@@ -200,7 +207,8 @@
         private void OnSelectedItem(int index)
         {
             _selectedItem = Results[index];
-            _selectedItemText.text = SourceProvider.LabelTextFor(_selectedItem);
+            if (_selectedItemText != null)
+                _selectedItemText.text = SourceProvider.LabelTextFor(_selectedItem);
             Results = new T[_maxItemsToShow];
             HideAllResults();
         }
