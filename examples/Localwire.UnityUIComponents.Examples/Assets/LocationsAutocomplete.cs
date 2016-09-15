@@ -2,6 +2,7 @@
 
 namespace Assets.DLLs
 {
+    using Models;
     using UnityEngine;
 
     public class LocationsAutocomplete : AutocompleteTextboxView<Location>
@@ -9,7 +10,7 @@ namespace Assets.DLLs
         protected override void Start()
         {
             base.Start();
-            SourceProvider = new GameObject().AddComponent<JsonLocationsWebSource>();
+            SourceProvider = new JsonLocationsSource();
         }
     }
 }

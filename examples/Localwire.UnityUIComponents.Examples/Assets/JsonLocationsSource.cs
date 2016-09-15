@@ -1,10 +1,10 @@
 ﻿namespace Assets
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using Localwire.UnityUIComponents.AutocompleteTextbox.SourceProvider;
+    using Models;
     using UnityEngine;
 
     public class JsonLocationsSource : IAutocompleteSourceProvider<Location>
@@ -31,19 +31,5 @@
                 _locations = JsonUtility.FromJson<LocationList>(json).Locations;
             }
         }
-    }
-
-    [Serializable]
-    public class LocationList
-    {
-        public Location[] Locations;
-    }
-    
-    [Serializable]
-    public class Location
-    {
-        public string City;
-        public string Country;
-        public string CountryCode;
     }
 }

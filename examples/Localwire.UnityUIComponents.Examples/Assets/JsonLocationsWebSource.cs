@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using Localwire.UnityUIComponents.AutocompleteTextbox.SourceProvider;
+    using Models;
     using UnityEngine;
 
     public class JsonLocationsWebSource : MonoBehaviour, IAutocompleteSourceProvider<Location>
